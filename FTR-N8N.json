@@ -1,0 +1,245 @@
+{
+  "name": "FTR-N8N",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -672,
+        -144
+      ],
+      "id": "f36745b5-a6d3-46b3-89d7-bd487e24f3e9",
+      "name": "Telegram Trigger",
+      "webhookId": "98377b5b-784e-42f3-87d5-4b77299aec2c",
+      "credentials": {
+        "telegramApi": {
+          "id": "rPPq4L0z8aRzPkFG",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.openweathermap.org/data/2.5/weather",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "units",
+              "value": "metric"
+            },
+            {
+              "name": "lang",
+              "value": "pt_br"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json.queue }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -240,
+        -144
+      ],
+      "id": "6378c276-b136-4979-8ed0-c9b898090ad9",
+      "name": "Open Weather API Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "oIJM8u2gvh9YbyfX",
+          "name": "OPENWEATHER_API_KEY"
+        },
+        "httpQueryAuth": {
+          "id": "Zwf4H61m8olmba9V",
+          "name": "OPENWEATHER_API_KEY"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "❌ Cidade não encontrada. Use o formato Cidade,UF (ex.: São Paulo,SP).",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "49d928a6-d88b-49bf-97af-a7140253d7dc",
+      "name": "Error message",
+      "webhookId": "db4b923e-3768-4f0e-8d47-62f58c16abcf",
+      "credentials": {
+        "telegramApi": {
+          "id": "rPPq4L0z8aRzPkFG",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "569b1872-9959-481c-bba2-5a29f874e395",
+              "name": "=temp",
+              "value": "={{ Math.round($json.main.temp) }}",
+              "type": "string"
+            },
+            {
+              "id": "5497dc34-91cd-470a-bdae-0f623ebe39b4",
+              "name": "city",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        -224
+      ],
+      "id": "6d5300c1-5b7c-4428-871a-5e45886298bb",
+      "name": "Store City and Temp"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "55a864d1-d0a5-4f88-b6c1-ffbaa978e199",
+              "name": "queue",
+              "value": "={{ $json.message.text.trim().toLowerCase().normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\").replace(/\\s*,\\s*/g, ',').replace(/\\+/g, ' ') + ',br' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -448,
+        -144
+      ],
+      "id": "8bebbd5b-ad40-4997-80d7-28d2afb93caf",
+      "name": "Store Location"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "= 🌤️ A temperatura em {{ $json.city }} é de {{ $json.temp }}°C.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        -224
+      ],
+      "id": "bb1d2c50-f224-4478-8c7f-76f54abe2d99",
+      "name": "Send a text message",
+      "webhookId": "a38ebf67-9600-4757-8b52-11201d6a5966",
+      "credentials": {
+        "telegramApi": {
+          "id": "rPPq4L0z8aRzPkFG",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Store Location",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Open Weather API Request": {
+      "main": [
+        [
+          {
+            "node": "Store City and Temp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error message": {
+      "main": [
+        []
+      ]
+    },
+    "Store Location": {
+      "main": [
+        [
+          {
+            "node": "Open Weather API Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store City and Temp": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "dc3f4435-db75-4377-8b3b-dc0e991d3ddf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d854ddd5c40146ee3cf7e676c4f357990061a9963341d8850a6a0576c2b8676f"
+  },
+  "id": "b6vtc5PT41OezE42",
+  "tags": []
+}
