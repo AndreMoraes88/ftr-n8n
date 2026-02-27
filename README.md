@@ -11,6 +11,19 @@ Desenvolver um chatbot no Telegram utilizando N8N que informe a temperatura atua
 - **API OpenWeather:** Obtenha uma chave gratuita em [openweathermap.org](https://openweathermap.org/) e adicione-a na área de credenciais do N8N como **Query Auth**.
 - **Bot no Telegram:** Crie um bot através do [@BotFather](https://t.me/BotFather) no Telegram e adicione o token gerado na área de credenciais do N8N como **Telegram account**.
 
+## 📥 Importar o workflow dentro do n8n
+
+Siga os passos abaixo para importar o workflow na sua instância do n8n:
+
+1. Acesse o painel do **n8n** pelo navegador.
+2. No menu lateral esquerdo, clique em **Workflows**.
+3. Clique no botão **Import** (canto superior direito).
+4. Selecione a opção **Import from File**.
+5. Escolha o arquivo `.json` do workflow que você baixou.
+6. Clique em **Import** para concluir.
+7. Ativar o workflow clicando em **Activate** (canto superior direito).
+
+
 ## 🔑 Configuração de Credenciais no n8n
 
 Para que o bot funcione, você deve configurar as duas credenciais exibidas na aba de **Credentials** do seu projeto:
