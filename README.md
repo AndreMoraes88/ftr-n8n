@@ -11,6 +11,38 @@ Desenvolver um chatbot no Telegram utilizando N8N que informe a temperatura atua
 - **API OpenWeather:** Obtenha uma chave gratuita em [openweathermap.org](https://openweathermap.org/) e adicione-a na área de credenciais do N8N como **Query Auth**.
 - **Bot no Telegram:** Crie um bot através do [@BotFather](https://t.me/BotFather) no Telegram e adicione o token gerado na área de credenciais do N8N como **Telegram account**.
 
+## 🔑 Configuração de Credenciais no n8n
+
+Para que o bot funcione, você deve configurar as duas credenciais exibidas na aba de **Credentials** do seu projeto:
+
+</br>
+
+1️⃣ Telegram API
+
+Utilizada para permitir que o n8n receba e envie mensagens através do seu bot.
+
+1. No painel lateral esquerdo do n8n, clique em **Credentials**.  
+2. Clique no botão **Add Credential** (canto superior direito).  
+3. Pesquise por **Telegram API** e selecione-a.  
+4. No campo **Access Token**, cole o token gerado pelo **@BotFather** no Telegram.  
+5. Clique em **Save** para finalizar.  
+
+</br>
+
+2️⃣ OpenWeather (Query Auth)
+
+Como a OpenWeather exige a chave de API diretamente na URL (*query parameters*), utilizamos o tipo **Query Auth**.
+
+1. Clique em **Add Credential** novamente.  
+2. Pesquise por **HTTP Header Auth** e, dentro das opções, selecione **Query Auth**.  
+3. Configure os campos da seguinte maneira:
+
+   - **Name:** Digite exatamente `appid` (este é o nome do parâmetro que a API espera).  
+   - **Value:** Cole a sua API Key gerada no site da OpenWeather.  
+4. Dê um nome amigável à credencial, como `OPENWEATHER_API_KEY`, e clique em **Save**.
+
+</br>
+
 ## 📋 Regras de Negócio
 
 ### Formato de entrada
